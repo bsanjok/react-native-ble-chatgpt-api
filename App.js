@@ -38,6 +38,7 @@ const App = () => {
           sortingAlphabets={sortingAlphabets}
           filterText={filterText}
           setFilterText={setFilterText}
+          setAvailableOptions={setAvailableOptions}
         />
       )}
     </View>

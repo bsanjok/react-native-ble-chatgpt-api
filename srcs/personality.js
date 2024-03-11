@@ -8,8 +8,8 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions }) => {
   const [loading, setLoading] = useState(false);
   const [buttonPressed, setButtonPressed] = useState(false); // State to track if button is pressed
 
-  console.log(selectedOptions);
-  console.log(toCompareOptions);
+  console.log(`First user: ${selectedOptions}`);
+  console.log(`Second User: ${toCompareOptions}`);
   const formattedSelectedoptions = selectedOptions.join(", ");
   const formattedCompareOptions = toCompareOptions.join(", ");
   const sendToChatGPT = async () => {
@@ -21,7 +21,7 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions }) => {
         messages: [
           {
             role: "system",
-            content: "You are provided with two user with set of keywords of interests separated by comma. Two users are separated by |. With content you are provided, compute a Cosine Similarity score out of 100 based on their interests. Show only score and summary of comparision with short insight. Add a suggestion for bonding at end."
+            content: "You are provided with two user with set of keywords of interests separated by comma. Two users are separated by |. With content you are provided, compute similarity score based on Cosine Similarity algorithm. Show score as out of 100 based on their interests. Show only score and summary of comparision with short insight. Add a suggestion for bonding at end."
           },
           {
             role: "user",
@@ -39,7 +39,7 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer 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', // Replace YOUR_API_KEY with your actual API key
+          'Authorization': 'Bearer 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',
         },
         body: JSON.stringify(requestBody),
       });
