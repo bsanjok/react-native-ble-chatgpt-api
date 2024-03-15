@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons'; // Assuming you're using Expo, otherwise import icons from appropriate library
+import { FontAwesome } from '@expo/vector-icons';
 
 const PersonalityAnalysis = ({ selectedOptions, toCompareOptions }) => {
   const [analysisResult, setAnalysisResult] = useState('');

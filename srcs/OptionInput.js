@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Alert, Platform } from 'react-native';
-import PersonalityAnalysis from './personality';
+import PersonalityAnalysis from './GptCalculation';
 
 const AnalysisOptions = ({ selectedOptions, setSelectedOptions, availableOptions, toCompareOptions, sortingAlphabets, filterText, setFilterText, setAvailableOptions }) => {
   const [showAddOption, setShowAddOption] = useState(false);
@@ -98,11 +98,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5FCFF',
-    marginTop: Platform.OS === 'ios' ? 20 : 0, // Add platform-specific padding for iOS
+    marginTop: Platform.OS === 'ios' ? 0 : 0, // Add platform-specific padding for iOS
   },
   filterContainer: {
     paddingHorizontal: 16,
-    paddingTop: Platform.OS === 'ios' ? 50 : 0, // Add platform-specific padding for iOS
+    paddingTop: Platform.OS === 'ios' ? 0 : 0, // Add platform-specific padding for iOS
     paddingBottom: 8,
     flexDirection: 'row',
     alignItems: 'center',
