@@ -68,11 +68,11 @@ const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptio
       setAvailableOptions([...availableOptions, newOption]);
       setFilterText('');
       setSelectedOptions([...selectedOptions, newOption]); // Automatically select the newly added option
+      setNewOptionInput(''); // Clear the input field after adding the new option
     } else {
       Alert.alert('Option already exists.');
     }
   };
-  
   
   
 
