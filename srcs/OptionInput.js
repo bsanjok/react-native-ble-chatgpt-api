@@ -192,7 +192,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFC107',
   },
   resultContainer: {
-    marginBottom: 0,
     alignItems: 'center',
     backgroundColor: '#F0F0F0', // Light gray background color
     padding: 16, // Padding for the result box

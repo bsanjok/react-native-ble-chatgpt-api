@@ -12,6 +12,18 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions }) => {
   console.log(`Second User: ${toCompareOptions}`);
   const formattedSelectedoptions = selectedOptions.join(", ");
   const formattedCompareOptions = toCompareOptions.join(", ");
+
+  const extractResultingScore = (result) => {
+    // Implement the logic to extract the score from the result
+    // For example, if the result is a string containing the score at the end:
+    const scoreIndex = result.lastIndexOf('Score:');
+    const scoreString = result.substring(scoreIndex + 7); // Assuming 'Score:' is followed by the score
+    const score = parseFloat(scoreString);
+
+    return score;
+};
+
+
   const sendToChatGPT = async () => {
     try {
       setLoading(true);
@@ -50,6 +62,13 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions }) => {
 
       const data = await response.json();
       setAnalysisResult(data.choices[0].message.content);
+      
+      const result = data.choices[0].message.content;
+      // Extract score from the result
+      const resultingScore = extractResultingScore(result);
+      console.log(`the score is: ${result}`)
+      // Pass resulting score to parent component
+
       setMinimized(false);
     } catch (error) {
       console.error('Error:', error);
