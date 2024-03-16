@@ -143,7 +143,6 @@ const BleScreen = () => {
           title={isScanning ? 'Stop Scan' : 'Start Scan'}
           onPress={isScanning ? stopScan : startScan}
           disabled={!manager}
-          color= "blue"
         />
         <FlatList
           data={scanningDevices}

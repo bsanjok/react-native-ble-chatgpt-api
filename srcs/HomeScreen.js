@@ -5,7 +5,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons'; // Assuming you're using Expo, if not, use appropriate icon library
 import AnalysisOptions from './OptionInput';
 import BleComponent from './BleComponent';
-import { StatusBar } from './StatusBar';
 
 function HomeScreen({ navigation }) {
     const [selectedOptions, setSelectedOptions] = useState([]);
@@ -61,7 +60,7 @@ export default function HomeScreenPage() {
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
-
+        
             if (route.name === 'Home') {
               iconName = focused ? 'home' : 'home-outline';
             } else if (route.name === 'Devices') {
@@ -71,15 +70,19 @@ export default function HomeScreenPage() {
             } else if (route.name === 'Settings') {
               iconName = focused ? 'settings' : 'settings-outline';
             }
-
+        
             // You can return any component that you like here!
             return <Ionicons name={iconName} size={size} color={color} />;
           },
+          tabBarActiveTintColor: 'red', // Set active tab color to red
+          tabBarInactiveTintColor: 'gray', // Set inactive tab color to gray
+          tabBarStyle: [
+            {
+              display: 'flex', // Ensure the tab bar is displayed as a flex container
+            },
+            null,
+          ],
         })}
-        tabBarOptions={{
-          activeTintColor: 'red',
-          inactiveTintColor: 'gray',
-        }}
       >
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Devices" component={DevicesScreen} />

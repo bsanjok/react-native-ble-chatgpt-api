@@ -81,9 +81,12 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions }) => {
             <View style={styles.resultContainer}>
               <TouchableOpacity onPress={toggleMinimize}>
                 {minimized ? (
-                  <FontAwesome name="angle-double-up" size={24} color="gray" />
+                  <View style={styles.resultContainer}>
+                    <Text color="gray">Press to expand</Text>
+                    <FontAwesome name="angle-double-up" size={30} color="gray" />
+                  </View>
                 ) : (
-                  <FontAwesome name="angle-double-down" size={24} color="gray" />
+                  <FontAwesome name="angle-double-down" size={30} color="gray" />
                 )}
               </TouchableOpacity>
               {!minimized && (
