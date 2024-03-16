@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, FlatList, PermissionsAndroid, Platform, StyleSheet, TextInput } from 'react-native';
 import { BleManager } from 'react-native-ble-plx';
+import { Buffer } from 'buffer';
 
 const manager = new BleManager();
 
@@ -96,31 +97,33 @@ const BleScreen = () => {
     }
   };
 
-  const sendDataToDevice = async () => {
+  const sendStringDataToDevice = async () => {
     try {
       if (!connectedDevice) {
         console.error('No device connected.');
         return;
       }
   
-      const serviceUUID = '180A'; // Update with your Arduino service UUID
-      const characteristicUUID = '2A57'; // Update with your Arduino characteristic UUID
+      const serviceUUID = '180A'; 
+      const characteristicUUID = '2A57'; 
   
-      // Convert the data to a string before sending
-      const dataString = dataToSend.toString();
+      const dataString = Buffer.from(dataToSend, 'utf-8');
+      console.log('Data to send:', dataString);
+  
   
       await connectedDevice.writeCharacteristicWithResponseForService(
         serviceUUID,
         characteristicUUID,
-        dataString
+        dataString.toString('base64')
       );
   
-      console.log('Data sent:', dataToSend);
+      console.log('String data sent:', dataString);
     } catch (error) {
-      console.error('Error sending data to device:', error);
+      console.error('Error sending string data to device:', error);
     }
   };
-
+  
+  
   const renderItem = ({ item }) => (
     <View style={styles.deviceContainer}>
       <Text style={styles.deviceName}>{item.name}</Text>
@@ -156,7 +159,7 @@ const BleScreen = () => {
             onChangeText={setDataToSend}
             value={dataToSend}
           />
-          <Button title="Send Data" onPress={sendDataToDevice} />
+          <Button title="Send Data" onPress={sendStringDataToDevice} />
         </View>
       )}
     </View>

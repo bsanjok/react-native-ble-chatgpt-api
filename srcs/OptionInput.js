@@ -1,10 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Alert, Platform } from 'react-native';
 import PersonalityAnalysis from './GptCalculation';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
-const AnalysisOptions = ({ selectedOptions, setSelectedOptions, availableOptions, toCompareOptions, sortingAlphabets, filterText, setFilterText, setAvailableOptions }) => {
+const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptions }) => {
+  const [selectedOptions, setSelectedOptions] = useState([]);
   const [showAddOption, setShowAddOption] = useState(false);
+  const [filterText, setFilterText] = useState('');
   const [newOptionInput, setNewOptionInput] = useState('');
+
+  // Retrieve selected options from AsyncStorage on component mount
+  useEffect(() => {
+    retrieveSelectedOptions();
+  }, []);
+
+  // Save selected options to AsyncStorage whenever it changes
+  useEffect(() => {
+    saveSelectedOptions();
+  }, [selectedOptions]);
+
+  // Function to save selected options to AsyncStorage
+  const saveSelectedOptions = async () => {
+    try {
+      await AsyncStorage.setItem('selectedOptions', JSON.stringify(selectedOptions));
+    } catch (error) {
+      console.error('Error saving selected options:', error);
+    }
+  };
+
+  // Function to retrieve selected options from AsyncStorage
+  const retrieveSelectedOptions = async () => {
+    try {
+      const storedOptions = await AsyncStorage.getItem('selectedOptions');
+      if (storedOptions !== null) {
+        setSelectedOptions(JSON.parse(storedOptions));
+      }
+    } catch (error) {
+      console.error('Error retrieving selected options:', error);
+    }
+  };
 
   const toggleOption = (option) => {
     if (selectedOptions.includes(option)) {
@@ -38,6 +72,11 @@ const AnalysisOptions = ({ selectedOptions, setSelectedOptions, availableOptions
       Alert.alert('Option already exists.');
     }
   };
+  
+  
+  
+
+
   
   // Determine whether to show the "Add Option" button
   useEffect(() => {
