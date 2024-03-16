@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons'; // Assuming you're using Expo, if not, use appropriate icon library
 import AnalysisOptions from './OptionInput';
 import BleComponent from './BleComponent';
+import { StatusBar } from './StatusBar';
 
 function HomeScreen({ navigation }) {
     const [selectedOptions, setSelectedOptions] = useState([]);

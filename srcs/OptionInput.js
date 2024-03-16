@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Alert, Platform } from 'react-native';
 import PersonalityAnalysis from './GptCalculation';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import { setStatusBar } from './StatusBar';
 
 const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptions }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -11,6 +12,7 @@ const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptio
 
   // Retrieve selected options from AsyncStorage on component mount
   useEffect(() => {
+    setStatusBar();
     retrieveSelectedOptions();
   }, []);
 
@@ -190,7 +192,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFC107',
   },
   resultContainer: {
-    marginBottom: 20,
+    marginBottom: 0,
     alignItems: 'center',
     backgroundColor: '#F0F0F0', // Light gray background color
     padding: 16, // Padding for the result box
