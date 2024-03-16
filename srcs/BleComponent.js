@@ -5,7 +5,7 @@ import { Buffer } from 'buffer';
 
 const manager = new BleManager();
 
-const BleScreen = () => {
+const BleScreen = ({finalScore}) => {
   const [scanningDevices, setScanningDevices] = useState([]);
   const [connectedDevice, setConnectedDevice] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
@@ -82,7 +82,24 @@ const BleScreen = () => {
       await device.connect();
       await device.discoverAllServicesAndCharacteristics();
       setConnectedDevice(device);
-      stopScan(); // Stop scanning after successful connection
+      stopScan();
+      if(finalScore < 30)
+      {
+        setDataToSend("red");
+        sendStringDataToDevice();
+      }
+      else if (finalScore > 30 && finalScore < 80)
+      {
+        setDataToSend("blue");
+        sendStringDataToDevice();
+      }
+      else if (finalScore > 80)
+      {
+        setDataToSend("green");
+        sendStringDataToDevice();
+      }
+
+       // Stop scanning after successful connection
     } catch (error) {
       console.error('Error connecting to device:', error);
     }

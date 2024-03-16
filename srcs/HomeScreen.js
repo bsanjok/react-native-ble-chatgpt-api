@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons'; // Assuming you're using Expo, if
 import AnalysisOptions from './OptionInput';
 import BleComponent from './BleComponent';
 
-function HomeScreen({ navigation }) {
+function HomeScreen({ navigation,  setFinalScore}) {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [availableOptions, setAvailableOptions] = useState(["Anime", "Football", "Video Games", "Startup", "Beer", "Travel", "Hiking", "Project Management", "Food", "Making Friends", "Cycling"]);
     const [toCompareOptions, setToCompareOptions] = useState(["Startup", "Beer", "Travel", "Hiking"])
@@ -22,13 +22,14 @@ function HomeScreen({ navigation }) {
         filterText={filterText}
         setFilterText={setFilterText}
         setAvailableOptions={setAvailableOptions}
+        setFinalScore={setFinalScore}
       />
   );
 }
 
-function DevicesScreen({ navigation }) {
+function DevicesScreen({ navigation, finalScore }) {
   return (
-    <BleComponent />
+    <BleComponent finalScore={finalScore}/>
     // <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
     //   <Button title="Go to Notifications" onPress={() => navigation.navigate('Notifications')} />
     // </View>
@@ -53,7 +54,7 @@ function SettingsScreen({ navigation }) {
 
 const Tab = createBottomTabNavigator();
 
-export default function HomeScreenPage() {
+export default function HomeScreenPage( {setFinalScore, finalScore} ) {
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -84,8 +85,12 @@ export default function HomeScreenPage() {
           ],
         })}
       >
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Devices" component={DevicesScreen} />
+        <Tab.Screen name="Home">
+          {(props) => <HomeScreen {...props} setFinalScore={setFinalScore} />}
+        </Tab.Screen>
+        <Tab.Screen name="Devices">
+          {(props) => <DevicesScreen {...props} finalScore={finalScore} />}
+        </Tab.Screen>
         <Tab.Screen name="Notifications" component={NotificationsScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
       </Tab.Navigator>

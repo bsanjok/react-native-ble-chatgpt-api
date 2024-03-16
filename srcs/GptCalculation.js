@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
-const PersonalityAnalysis = ({ selectedOptions, toCompareOptions }) => {
+const PersonalityAnalysis = ({ selectedOptions, toCompareOptions, setFinalScore }) => {
   const [analysisResult, setAnalysisResult] = useState('');
   const [minimized, setMinimized] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -66,7 +66,9 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions }) => {
       const result = data.choices[0].message.content;
       // Extract score from the result
       const resultingScore = extractResultingScore(result);
-      console.log(`the score is: ${result}`)
+      console.log(`the score is: ${resultingScore}`);
+      setFinalScore(resultingScore);
+
       // Pass resulting score to parent component
 
       setMinimized(false);

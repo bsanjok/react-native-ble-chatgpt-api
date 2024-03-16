@@ -5,13 +5,14 @@ import HomeScreenPage from './srcs/HomeScreen';
 
 const App = () => {
   const [showOptions, setShowOptions] = useState(false);
-
+  const [finalScore, setFinalScore] = useState('');
+  console.log(finalScore);
   return (
     <View style={styles.container}>
       {!showOptions ? (
         <WelcomeScreen onPress={() => setShowOptions(true)} />
         ) : (
-          <HomeScreenPage />
+          <HomeScreenPage setFinalScore={setFinalScore} finalScore={finalScore}/>
       )}
     </View>
   );

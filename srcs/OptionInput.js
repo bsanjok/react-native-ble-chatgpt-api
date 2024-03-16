@@ -4,7 +4,7 @@ import PersonalityAnalysis from './GptCalculation';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 import { setStatusBar } from './StatusBar';
 
-const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptions }) => {
+const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptions, setFinalScore }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [showAddOption, setShowAddOption] = useState(false);
   const [filterText, setFilterText] = useState('');
@@ -15,7 +15,6 @@ const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptio
     setStatusBar();
     retrieveSelectedOptions();
   }, []);
-
   // Save selected options to AsyncStorage whenever it changes
   useEffect(() => {
     saveSelectedOptions();
@@ -76,10 +75,6 @@ const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptio
     }
   };
   
-  
-
-
-  
   // Determine whether to show the "Add Option" button
   useEffect(() => {
     const shouldShow = filterText.trim() !== '' && !availableOptions.includes(filterText);
@@ -129,7 +124,7 @@ const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptio
         </ScrollView>
       </View>
       <View style={styles.resultContainer}>
-        <PersonalityAnalysis selectedOptions={selectedOptions} toCompareOptions={toCompareOptions} />
+        <PersonalityAnalysis selectedOptions={selectedOptions} toCompareOptions={toCompareOptions} setFinalScore={setFinalScore}/>
       </View>
     </View>
   );
