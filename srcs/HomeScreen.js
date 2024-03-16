@@ -26,7 +26,7 @@ function HomeScreen({ navigation }) {
   );
 }
 
-function ProfileScreen({ navigation }) {
+function DevicesScreen({ navigation }) {
   return (
     <BleComponent />
     // <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -63,8 +63,8 @@ export default function HomeScreenPage() {
 
             if (route.name === 'Home') {
               iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === 'Profile') {
-              iconName = focused ? 'person' : 'person-outline';
+            } else if (route.name === 'Devices') {
+              iconName = focused ? 'bluetooth' : 'bluetooth-outline';
             } else if (route.name === 'Notifications') {
               iconName = focused ? 'notifications' : 'notifications-outline';
             } else if (route.name === 'Settings') {
@@ -81,7 +81,7 @@ export default function HomeScreenPage() {
         }}
       >
         <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Profile" component={ProfileScreen} />
+        <Tab.Screen name="Devices" component={DevicesScreen} />
         <Tab.Screen name="Notifications" component={NotificationsScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
       </Tab.Navigator>

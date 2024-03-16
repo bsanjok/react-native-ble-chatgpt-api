@@ -131,6 +131,7 @@ const BleScreen = () => {
         title={connectedDevice && connectedDevice.id === item.id ? 'Connected' : 'Connect'}
         onPress={() => connectToDevice(item)}
         disabled={connectedDevice && connectedDevice.id === item.id}
+        color= "teal"
       />
     </View>
   );
@@ -142,6 +143,7 @@ const BleScreen = () => {
           title={isScanning ? 'Stop Scan' : 'Start Scan'}
           onPress={isScanning ? stopScan : startScan}
           disabled={!manager}
+          color= "blue"
         />
         <FlatList
           data={scanningDevices}
@@ -152,14 +154,14 @@ const BleScreen = () => {
       {connectedDevice && (
         <View style={styles.connectedDeviceContainer}>
           <Text style={styles.deviceName}>{connectedDevice.name}</Text>
-          <Button title="Disconnect" onPress={() => disconnectDevice(connectedDevice)} />
+          <Button title="Disconnect" onPress={() => disconnectDevice(connectedDevice)} color= "red"/>
           <TextInput
             style={styles.input}
             placeholder="Enter data to send"
             onChangeText={setDataToSend}
             value={dataToSend}
           />
-          <Button title="Send Data" onPress={sendStringDataToDevice} />
+          <Button title="Send Data" onPress={sendStringDataToDevice} color= "teal"/>
         </View>
       )}
     </View>
@@ -174,6 +176,9 @@ const styles = StyleSheet.create({
   },
   scanSection: {
     flex: 1,
+  },
+  scanButton: {
+    color: "teal"
   },
   connectedDeviceContainer: {
     marginTop: 20,
