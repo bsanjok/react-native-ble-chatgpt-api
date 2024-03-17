@@ -5,11 +5,9 @@ import { Buffer } from 'buffer';
 
 const manager = new BleManager();
 
-const BleScreen = ({finalScore}) => {
+const BleScreen = ({finalScore, connectedDevice, setConnectedDevice, sendStringDataToDevice, dataToSend, setDataToSend}) => {
   const [scanningDevices, setScanningDevices] = useState([]);
-  const [connectedDevice, setConnectedDevice] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
-  const [dataToSend, setDataToSend] = useState('');
 
   useEffect(() => {
     return () => {
@@ -83,22 +81,6 @@ const BleScreen = ({finalScore}) => {
       await device.discoverAllServicesAndCharacteristics();
       setConnectedDevice(device);
       stopScan();
-      if(finalScore < 30)
-      {
-        setDataToSend("red");
-        sendStringDataToDevice();
-      }
-      else if (finalScore > 30 && finalScore < 80)
-      {
-        setDataToSend("blue");
-        sendStringDataToDevice();
-      }
-      else if (finalScore > 80)
-      {
-        setDataToSend("green");
-        sendStringDataToDevice();
-      }
-
        // Stop scanning after successful connection
     } catch (error) {
       console.error('Error connecting to device:', error);
@@ -114,31 +96,31 @@ const BleScreen = ({finalScore}) => {
     }
   };
 
-  const sendStringDataToDevice = async () => {
-    try {
-      if (!connectedDevice) {
-        console.error('No device connected.');
-        return;
-      }
+  // const sendStringDataToDevice = async () => {
+  //   try {
+  //     if (!connectedDevice) {
+  //       console.error('No device connected.');
+  //       return;
+  //     }
   
-      const serviceUUID = '180A'; 
-      const characteristicUUID = '2A57'; 
+  //     const serviceUUID = '180A'; 
+  //     const characteristicUUID = '2A57'; 
   
-      const dataString = Buffer.from(dataToSend, 'utf-8');
-      console.log('Data to send:', dataString);
+  //     const dataString = Buffer.from(dataToSend, 'utf-8');
+  //     console.log('Data to send:', dataString);
   
   
-      await connectedDevice.writeCharacteristicWithResponseForService(
-        serviceUUID,
-        characteristicUUID,
-        dataString.toString('base64')
-      );
+  //     await connectedDevice.writeCharacteristicWithResponseForService(
+  //       serviceUUID,
+  //       characteristicUUID,
+  //       dataString.toString('base64')
+  //     );
   
-      console.log('String data sent:', dataString);
-    } catch (error) {
-      console.error('Error sending string data to device:', error);
-    }
-  };
+  //     console.log('String data sent:', dataString);
+  //   } catch (error) {
+  //     console.error('Error sending string data to device:', error);
+  //   }
+  // };
   
   
   const renderItem = ({ item }) => (

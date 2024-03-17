@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons'; // Assuming you're using Expo, if
 import AnalysisOptions from './OptionInput';
 import BleComponent from './BleComponent';
 
-function HomeScreen({ navigation,  setFinalScore}) {
+function HomeScreen({ navigation,  setFinalScore, dataToSend, setDataToSend, sendStringDataToDevice, connectedDevice}) {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [availableOptions, setAvailableOptions] = useState(["Anime", "Football", "Video Games", "Startup", "Beer", "Travel", "Hiking", "Project Management", "Food", "Making Friends", "Cycling"]);
     const [toCompareOptions, setToCompareOptions] = useState(["Startup", "Beer", "Travel", "Hiking"])
@@ -23,13 +23,24 @@ function HomeScreen({ navigation,  setFinalScore}) {
         setFilterText={setFilterText}
         setAvailableOptions={setAvailableOptions}
         setFinalScore={setFinalScore}
+        dataToSend={dataToSend}
+        setDataToSend={setDataToSend}
+        sendStringDataToDevice={sendStringDataToDevice}
+        connectedDevice={connectedDevice}
       />
   );
 }
 
-function DevicesScreen({ navigation, finalScore }) {
+function DevicesScreen({ navigation, finalScore, setConnectedDevice, connectedDevice, sendStringDataToDevice, setDataToSend, dataToSend}) {
   return (
-    <BleComponent finalScore={finalScore}/>
+    <BleComponent 
+    finalScore={finalScore} 
+    setConnectedDevice={setConnectedDevice} 
+    connectedDevice={connectedDevice}
+    sendStringDataToDevice={sendStringDataToDevice}
+    setDataToSend={setDataToSend} 
+    dataToSend={dataToSend}
+    />
     // <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
     //   <Button title="Go to Notifications" onPress={() => navigation.navigate('Notifications')} />
     // </View>
@@ -54,7 +65,7 @@ function SettingsScreen({ navigation }) {
 
 const Tab = createBottomTabNavigator();
 
-export default function HomeScreenPage( {setFinalScore, finalScore} ) {
+export default function HomeScreenPage( {setFinalScore, finalScore, setConnectedDevice, connectedDevice, sendStringDataToDevice, setDataToSend, dataToSend} ) {
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -86,10 +97,10 @@ export default function HomeScreenPage( {setFinalScore, finalScore} ) {
         })}
       >
         <Tab.Screen name="Home">
-          {(props) => <HomeScreen {...props} setFinalScore={setFinalScore} />}
+          {(props) => <HomeScreen {...props} setFinalScore={setFinalScore} setDataToSend={setDataToSend} dataToSend={dataToSend} sendStringDataToDevice={sendStringDataToDevice} connectedDevice={connectedDevice}/>}
         </Tab.Screen>
         <Tab.Screen name="Devices">
-          {(props) => <DevicesScreen {...props} finalScore={finalScore} />}
+          {(props) => <DevicesScreen {...props} finalScore={finalScore} setConnectedDevice={setConnectedDevice} connectedDevice={connectedDevice} sendStringDataToDevice={sendStringDataToDevice} setDataToSend={setDataToSend} dataToSend={dataToSend}/>}
         </Tab.Screen>
         <Tab.Screen name="Notifications" component={NotificationsScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />

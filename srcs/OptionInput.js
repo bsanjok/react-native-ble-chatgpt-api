@@ -4,7 +4,7 @@ import PersonalityAnalysis from './GptCalculation';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 import { setStatusBar } from './StatusBar';
 
-const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptions, setFinalScore }) => {
+const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptions, setFinalScore, setDataToSend, dataToSend, sendStringDataToDevice, connectedDevice}) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [showAddOption, setShowAddOption] = useState(false);
   const [filterText, setFilterText] = useState('');
@@ -124,7 +124,7 @@ const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptio
         </ScrollView>
       </View>
       <View style={styles.resultContainer}>
-        <PersonalityAnalysis selectedOptions={selectedOptions} toCompareOptions={toCompareOptions} setFinalScore={setFinalScore}/>
+        <PersonalityAnalysis selectedOptions={selectedOptions} toCompareOptions={toCompareOptions} setFinalScore={setFinalScore} dataToSend={dataToSend} setDataToSend={setDataToSend} sendStringDataToDevice={sendStringDataToDevice} connectedDevice={connectedDevice}/>
       </View>
     </View>
   );

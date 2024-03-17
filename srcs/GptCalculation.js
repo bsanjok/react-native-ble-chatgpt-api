@@ -1,17 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
-const PersonalityAnalysis = ({ selectedOptions, toCompareOptions, setFinalScore }) => {
+const PersonalityAnalysis = ({ selectedOptions, toCompareOptions, setFinalScore, dataToSend, setDataToSend, sendStringDataToDevice, connectedDevice}) => {
   const [analysisResult, setAnalysisResult] = useState('');
   const [minimized, setMinimized] = useState(false);
   const [loading, setLoading] = useState(false);
   const [buttonPressed, setButtonPressed] = useState(false); // State to track if button is pressed
+  const [resultingScore, setResultingScore] = useState('');
 
   console.log(`First user: ${selectedOptions}`);
   console.log(`Second User: ${toCompareOptions}`);
   const formattedSelectedoptions = selectedOptions.join(", ");
   const formattedCompareOptions = toCompareOptions.join(", ");
+
+  useEffect(() => {
+    console.log(dataToSend);
+    if (dataToSend !== 'wrong') {
+      sendStringDataToDevice();
+      setDataToSend('wrong'); // Reset dataToSend after sending
+    }
+  }, [dataToSend, sendStringDataToDevice]);
+  
+
+  useEffect(() => {
+    if (resultingScore !== null) {
+      if (resultingScore < 30) {
+        setDataToSend("red");
+      } else if (resultingScore >= 30 && resultingScore < 80) {
+        setDataToSend("blue");
+      } else if (resultingScore >= 80){
+        setDataToSend("green");
+      }
+      else {
+        setDataToSend("wrong");
+      }
+    }
+  }, [resultingScore, setDataToSend]);
+  
 
   const extractResultingScore = (result) => {
     // Implement the logic to extract the score from the result
@@ -21,7 +47,7 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions, setFinalScore 
     const score = parseFloat(scoreString);
 
     return score;
-};
+  };
 
 
   const sendToChatGPT = async () => {
@@ -65,10 +91,25 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions, setFinalScore 
       
       const result = data.choices[0].message.content;
       // Extract score from the result
-      const resultingScore = extractResultingScore(result);
+
+      setResultingScore(extractResultingScore(result))
       console.log(`the score is: ${resultingScore}`);
       setFinalScore(resultingScore);
-
+      // if(resultingScore < 30)
+      // {
+      //   setDataToSend("red");
+      //   sendStringDataToDevice();
+      // }
+      // else if (resultingScore > 30 && resultingScore < 80)
+      // {
+      //   setDataToSend("blue");
+      //   sendStringDataToDevice();
+      // }
+      // else if (resultingScore > 80)
+      // {
+      //   setDataToSend("green");
+      //   sendStringDataToDevice();
+      // }
       // Pass resulting score to parent component
 
       setMinimized(false);
@@ -87,7 +128,11 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions, setFinalScore 
     setButtonPressed(true);
     if (selectedOptions.length === 0) {
       setAnalysisResult("No option selected. Please select one or more for better analysis.");
-    } else {
+    } 
+    else if (!connectedDevice){
+      setAnalysisResult("No devices connected. Pleae connect a device to proceed.");
+    }
+     else {
       sendToChatGPT();
     }
   };
