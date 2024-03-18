@@ -8,12 +8,18 @@ const manager = new BleManager();
 const BleScreen = ({finalScore, connectedDevice, setConnectedDevice, sendStringDataToDevice, dataToSend, setDataToSend}) => {
   const [scanningDevices, setScanningDevices] = useState([]);
   const [isScanning, setIsScanning] = useState(false);
+  const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
     return () => {
       stopScan();
     };
   }, []);
+
+  const handleSendButtonPress = () => {
+    setDataToSend(inputValue);
+    sendStringDataToDevice(); // Update dataToSend with inputValue
+  };
 
   const requestBluetoothPermission = async () => {
     if (Platform.OS === 'ios') {
@@ -156,10 +162,10 @@ const BleScreen = ({finalScore, connectedDevice, setConnectedDevice, sendStringD
           <TextInput
             style={styles.input}
             placeholder="Enter data to send"
-            onChangeText={setDataToSend}
-            value={dataToSend}
+            onChangeText={setInputValue} // Update inputValue when text changes
+            value={inputValue}
           />
-          <Button title="Send Data" onPress={sendStringDataToDevice} color= "teal"/>
+          <Button title="Send Data" onPress={handleSendButtonPress} color= "teal"/>
         </View>
       )}
     </View>

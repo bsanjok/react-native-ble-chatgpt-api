@@ -37,7 +37,7 @@ const App = () => {
     }
   };
 
-  console.log(finalScore);
+  console.log(`Data to send: ${dataToSend}`);
   return (
     <View style={styles.container}>
       {!showOptions ? (

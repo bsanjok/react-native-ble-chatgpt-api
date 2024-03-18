@@ -7,7 +7,7 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions, setFinalScore,
   const [minimized, setMinimized] = useState(false);
   const [loading, setLoading] = useState(false);
   const [buttonPressed, setButtonPressed] = useState(false); // State to track if button is pressed
-  const [resultingScore, setResultingScore] = useState('');
+  const [resultingScore, setResultingScore] = useState(-1);
 
   console.log(`First user: ${selectedOptions}`);
   console.log(`Second User: ${toCompareOptions}`);
@@ -15,20 +15,28 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions, setFinalScore,
   const formattedCompareOptions = toCompareOptions.join(", ");
 
   useEffect(() => {
-    console.log(dataToSend);
-    if (dataToSend !== 'wrong') {
+    console.log('Data to send2:', dataToSend);
+    if (dataToSend == 'red' || dataToSend == 'yellow' || dataToSend == 'green') {
       sendStringDataToDevice();
-      setDataToSend('wrong'); // Reset dataToSend after sending
+      setDataToSend(prevDataToSend => {
+        if (prevDataToSend !== 'wrong') {
+          console.log('Data to send after reset:', 'wrong');
+          return 'wrong';
+        }
+        return prevDataToSend;
+      });
     }
-  }, [dataToSend, sendStringDataToDevice]);
+  }, [dataToSend]);
+  
+  
   
 
   useEffect(() => {
     if (resultingScore !== null) {
-      if (resultingScore < 30) {
+      if (resultingScore < 30 && resultingScore >= 0) {
         setDataToSend("red");
       } else if (resultingScore >= 30 && resultingScore < 80) {
-        setDataToSend("blue");
+        setDataToSend("yellow");
       } else if (resultingScore >= 80){
         setDataToSend("green");
       }
@@ -36,12 +44,10 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions, setFinalScore,
         setDataToSend("wrong");
       }
     }
-  }, [resultingScore, setDataToSend]);
+  }, [resultingScore]);
   
 
   const extractResultingScore = (result) => {
-    // Implement the logic to extract the score from the result
-    // For example, if the result is a string containing the score at the end:
     const scoreIndex = result.lastIndexOf('Score:');
     const scoreString = result.substring(scoreIndex + 7); // Assuming 'Score:' is followed by the score
     const score = parseFloat(scoreString);
@@ -95,23 +101,6 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions, setFinalScore,
       setResultingScore(extractResultingScore(result))
       console.log(`the score is: ${resultingScore}`);
       setFinalScore(resultingScore);
-      // if(resultingScore < 30)
-      // {
-      //   setDataToSend("red");
-      //   sendStringDataToDevice();
-      // }
-      // else if (resultingScore > 30 && resultingScore < 80)
-      // {
-      //   setDataToSend("blue");
-      //   sendStringDataToDevice();
-      // }
-      // else if (resultingScore > 80)
-      // {
-      //   setDataToSend("green");
-      //   sendStringDataToDevice();
-      // }
-      // Pass resulting score to parent component
-
       setMinimized(false);
     } catch (error) {
       console.error('Error:', error);
@@ -130,7 +119,7 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions, setFinalScore,
       setAnalysisResult("No option selected. Please select one or more for better analysis.");
     } 
     else if (!connectedDevice){
-      setAnalysisResult("No devices connected. Pleae connect a device to proceed.");
+      setAnalysisResult("No devices connected. Please connect a device to proceed.");
     }
      else {
       sendToChatGPT();
