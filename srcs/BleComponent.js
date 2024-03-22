@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Button, FlatList, PermissionsAndroid, Platform, StyleSheet, TextInput } from 'react-native';
 import { BleManager } from 'react-native-ble-plx';
 import { Buffer } from 'buffer';
+import DistanceCalculator from './DistanceCalculator'; 
 
 const manager = new BleManager();
 
@@ -15,6 +16,22 @@ const BleScreen = ({finalScore, connectedDevice, setConnectedDevice, sendStringD
       stopScan();
     };
   }, []);
+
+  useEffect(() => {
+    const handleDisconnect = () => {
+      setConnectedDevice(null); // Clear connectedDevice when disconnected
+    };
+
+    if (connectedDevice) {
+      connectedDevice.onDisconnected(handleDisconnect);
+    }
+
+    return () => {
+      if (connectedDevice) {
+        connectedDevice.onDisconnected(null); // Remove the disconnect listener when unmounting
+      }
+    };
+  }, [connectedDevice]);
 
   const handleSendButtonPress = () => {
     setDataToSend(inputValue);
@@ -102,6 +119,15 @@ const BleScreen = ({finalScore, connectedDevice, setConnectedDevice, sendStringD
     }
   };
 
+  const readRSSI = async () => {
+    try {
+      const updatedDevice = await connectedDevice.readRSSI();
+      return updatedDevice.rssi;
+    } catch (error) {
+      console.error('Error reading RSSI:', error);
+      return null;
+    }
+  };
   // const sendStringDataToDevice = async () => {
   //   try {
   //     if (!connectedDevice) {
@@ -167,6 +193,11 @@ const BleScreen = ({finalScore, connectedDevice, setConnectedDevice, sendStringD
           />
           <Button title="Send Data" onPress={handleSendButtonPress} color= "teal"/>
         </View>
+      )}
+      {connectedDevice ? (
+        <DistanceCalculator bleManager={manager} deviceIdentifier={connectedDevice.id} />
+      ) : (
+        <Text style={styles.noDeviceText}>No device connected.</Text>
       )}
     </View>
   );
