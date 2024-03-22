@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons'; // Assuming you're using Expo, if not, use appropriate icon library
 import AnalysisOptions from './OptionInput';
 import BleComponent from './BleComponent';
+import BleAutoDataExchange from './BleBroadcaster';
 
 function HomeScreen({ navigation,  setFinalScore, dataToSend, setDataToSend, sendStringDataToDevice, connectedDevice}) {
     const [selectedOptions, setSelectedOptions] = useState([]);
@@ -47,10 +48,10 @@ function DevicesScreen({ navigation, finalScore, setConnectedDevice, connectedDe
   );
 }
 
-function NotificationsScreen({ navigation }) {
+function NotificationsScreen({ navigation, dataToSend }) {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button title="Go to Settings" onPress={() => navigation.navigate('Settings')} />
+      {/* <BleAutoDataExchange dataToSend={dataToSend}/> */}
     </View>
   );
 }
@@ -102,7 +103,9 @@ export default function HomeScreenPage( {setFinalScore, finalScore, setConnected
         <Tab.Screen name="Devices">
           {(props) => <DevicesScreen {...props} finalScore={finalScore} setConnectedDevice={setConnectedDevice} connectedDevice={connectedDevice} sendStringDataToDevice={sendStringDataToDevice} setDataToSend={setDataToSend} dataToSend={dataToSend}/>}
         </Tab.Screen>
-        <Tab.Screen name="Notifications" component={NotificationsScreen} />
+        <Tab.Screen name="Notifications">
+        {(props) => <NotificationsScreen {...props} dataToSend={dataToSend}/>}
+        </Tab.Screen>
         <Tab.Screen name="Settings" component={SettingsScreen} />
       </Tab.Navigator>
     </NavigationContainer>
