@@ -4,8 +4,7 @@ import PersonalityAnalysis from './GptCalculation';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 import { setStatusBar } from './StatusBar';
 
-const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptions, setFinalScore, setDataToSend, dataToSend, sendStringDataToDevice, connectedDevice}) => {
-  const [selectedOptions, setSelectedOptions] = useState([]);
+const AnalysisOptions = ({selectedOptions, setSelectedOptions, availableOptions, toCompareOptions, setAvailableOptions, setFinalScore, setDataToSend, dataToSend, sendStringDataToDevice, connectedDevice}) => {
   const [showAddOption, setShowAddOption] = useState(false);
   const [filterText, setFilterText] = useState('');
   const [newOptionInput, setNewOptionInput] = useState('');
