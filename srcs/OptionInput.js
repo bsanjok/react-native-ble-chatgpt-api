@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Alert, Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import PersonalityAnalysis from './GptCalculation';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setStatusBar } from './StatusBar';
+import GenderBox from './GenderForm';
+import AboutMeComponent from './AboutMe';
 
-const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptions, setFinalScore, setDataToSend, dataToSend, sendStringDataToDevice, connectedDevice, selectedOptions, setSelectedOptions}) => {
+const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptions, setFinalScore, setDataToSend, dataToSend, sendStringDataToDevice, connectedDevice, selectedOptions, setSelectedOptions }) => {
   const [showAddOption, setShowAddOption] = useState(false);
   const [filterText, setFilterText] = useState('');
   const [newOptionInput, setNewOptionInput] = useState('');
 
-  // Retrieve selected options from AsyncStorage on component mount
   useEffect(() => {
     setStatusBar();
     retrieveSelectedOptions();
   }, []);
-  // Save selected options to AsyncStorage whenever it changes
+
   useEffect(() => {
     saveSelectedOptions();
   }, [selectedOptions]);
 
-  // Function to save selected options to AsyncStorage
   const saveSelectedOptions = async () => {
     try {
       await AsyncStorage.setItem('selectedOptions', JSON.stringify(selectedOptions));
@@ -28,7 +29,6 @@ const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptio
     }
   };
 
-  // Function to retrieve selected options from AsyncStorage
   const retrieveSelectedOptions = async () => {
     try {
       const storedOptions = await AsyncStorage.getItem('selectedOptions');
@@ -61,31 +61,41 @@ const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptio
   
     if (newOption === '') {
       Alert.alert('Option cannot be empty.');
-      return; // Exit the function early if the input is empty
+      return;
     }
   
     if (!availableOptions.includes(newOption)) {
       setAvailableOptions([...availableOptions, newOption]);
       setFilterText('');
-      setSelectedOptions([...selectedOptions, newOption]); // Automatically select the newly added option
-      setNewOptionInput(''); // Clear the input field after adding the new option
+      setSelectedOptions([...selectedOptions, newOption]);
+      setNewOptionInput('');
     } else {
       Alert.alert('Option already exists.');
     }
   };
   
-  // Determine whether to show the "Add Option" button
   useEffect(() => {
     const shouldShow = filterText.trim() !== '' && !availableOptions.includes(filterText);
     setShowAddOption(shouldShow);
   }, [filterText, availableOptions]);
 
+  const removeOption = (option) => {
+    setAvailableOptions(availableOptions.filter(availableOption => availableOption !== option));
+    setSelectedOptions(selectedOptions.filter(selectedOption => selectedOption !== option));
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.filterContainer}>
+        <GenderBox setSelectedOptions={setSelectedOptions} selectedOptions={selectedOptions}/>
+      </View>
+      <View style={styles.filterContainerA}>
+        <AboutMeComponent selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} availableOptions={availableOptions} setAvailableOptions={setAvailableOptions}/>
+      </View>
+      <View style={styles.filterContainer}>
         <TextInput
           style={styles.filterInput}
-          placeholder="Filter options"
+          placeholder="Filter Interests"
           onChangeText={text => setFilterText(text)}
           value={filterText}
         />
@@ -96,22 +106,26 @@ const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptio
       <View style={styles.optionsContainer}>
         <ScrollView showsVerticalScrollIndicator={false}>
           {filterOptionsByText().map((option, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[styles.option, selectedOptions.includes(option) ? styles.selectedOption : null]}
-              onPress={() => toggleOption(option)}
-            >
-              <Text style={styles.optionText}>{option}</Text>
-            </TouchableOpacity>
+            <View key={index} style={styles.optionContainer}>
+              <TouchableOpacity
+                style={[styles.option, selectedOptions.includes(option) ? styles.selectedOption : null]}
+                onPress={() => toggleOption(option)}
+              >
+                <Text style={styles.optionText}>{option}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => removeOption(option)}>
+                <Ionicons name="close-circle" size={24} color="red" />
+              </TouchableOpacity>
+            </View>
           ))}
           {showAddOption && (
             <View style={styles.addOptionContainer}>
-              <TextInput
+              {/* <TextInput
                 style={styles.addOptionInput}
                 placeholder="Enter new option"
                 onChangeText={text => setNewOptionInput(text)}
                 value={newOptionInput}
-              />
+              /> */}
               <TouchableOpacity
                 style={[styles.option, styles.addOptionButton]}
                 onPress={addNewOption}
@@ -123,7 +137,17 @@ const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptio
         </ScrollView>
       </View>
       <View style={styles.resultContainer}>
-        <PersonalityAnalysis selectedOptions={selectedOptions} toCompareOptions={toCompareOptions} setFinalScore={setFinalScore} dataToSend={dataToSend} setDataToSend={setDataToSend} sendStringDataToDevice={sendStringDataToDevice} connectedDevice={connectedDevice}/>
+        {filterText.trim() === '' && (
+          <PersonalityAnalysis
+            selectedOptions={selectedOptions}
+            toCompareOptions={toCompareOptions}
+            setFinalScore={setFinalScore}
+            dataToSend={dataToSend}
+            setDataToSend={setDataToSend}
+            sendStringDataToDevice={sendStringDataToDevice}
+            connectedDevice={connectedDevice}
+          />
+        )}
       </View>
     </View>
   );
@@ -133,11 +157,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5FCFF',
-    marginTop: Platform.OS === 'ios' ? 0 : 0, // Add platform-specific padding for iOS
+    marginTop: Platform.OS === 'ios' ? 0 : 0,
   },
   filterContainer: {
     paddingHorizontal: 16,
-    paddingTop: Platform.OS === 'ios' ? 0 : 0, // Add platform-specific padding for iOS
+    paddingTop: Platform.OS === 'ios' ? 10 : 10,
+    paddingBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  filterContainerA: {
+    paddingHorizontal: 16,
+    paddingTop: 70,
     paddingBottom: 8,
     flexDirection: 'row',
     alignItems: 'center',
@@ -166,13 +197,19 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
   },
+  optionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   option: {
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 20,
     backgroundColor: '#E0E0E0',
-    marginVertical: 4,
     marginHorizontal: 8,
+    flex: 1,
   },
   selectedOption: {
     backgroundColor: '#B2DFDB',
@@ -182,15 +219,31 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
   },
-  addOption: {
+  addOptionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  addOptionInput: {
+    flex: 1,
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+  },
+  addOptionButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 20,
     backgroundColor: '#FFC107',
+    marginHorizontal: 8,
   },
   resultContainer: {
     alignItems: 'center',
-    backgroundColor: '#F0F0F0', // Light gray background color
-    padding: 16, // Padding for the result box
-    borderTopLeftRadius: 20, // Rounded top-left corner
-    borderTopRightRadius: 20, // Rounded top-right corner
+    paddingBottom: 10,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
 });
 

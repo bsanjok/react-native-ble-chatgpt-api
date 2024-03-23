@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, FlatList, PermissionsAndroid, Platform, StyleSheet, TextInput } from 'react-native';
 import { BleManager } from 'react-native-ble-plx';
-import { Buffer } from 'buffer';
 import DistanceCalculator from './DistanceCalculator'; 
 
 const manager = new BleManager();
 
-const BleScreen = ({finalScore, connectedDevice, setConnectedDevice, sendStringDataToDevice, dataToSend, setDataToSend}) => {
+const BleScreen = ({ finalScore, connectedDevice, setConnectedDevice, sendStringDataToDevice, dataToSend, setDataToSend, requestBluetoothPermission }) => {
   const [scanningDevices, setScanningDevices] = useState([]);
+  const [connectedDevices, setConnectedDevices] = useState([]);
   const [isScanning, setIsScanning] = useState(false);
   const [inputValue, setInputValue] = useState('');
 
@@ -19,7 +19,8 @@ const BleScreen = ({finalScore, connectedDevice, setConnectedDevice, sendStringD
 
   useEffect(() => {
     const handleDisconnect = () => {
-      setConnectedDevice(null); // Clear connectedDevice when disconnected
+      setConnectedDevice(null);
+      setConnectedDevices(prevDevices => prevDevices.filter(d => d.id !== connectedDevice.id));
     };
 
     if (connectedDevice) {
@@ -28,36 +29,36 @@ const BleScreen = ({finalScore, connectedDevice, setConnectedDevice, sendStringD
 
     return () => {
       if (connectedDevice) {
-        connectedDevice.onDisconnected(null); // Remove the disconnect listener when unmounting
+        connectedDevice.onDisconnected(handleDisconnect);
       }
     };
   }, [connectedDevice]);
 
   const handleSendButtonPress = () => {
     setDataToSend(inputValue);
-    sendStringDataToDevice(); // Update dataToSend with inputValue
+    sendStringDataToDevice();
   };
 
-  const requestBluetoothPermission = async () => {
-    if (Platform.OS === 'ios') {
-      return true;
-    }
-    try {
-      const granted = await PermissionsAndroid.requestMultiple([
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
-        PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT
-      ]);
-      return (
-        granted['android.permission.ACCESS_FINE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED &&
-        granted['android.permission.BLUETOOTH_SCAN'] === PermissionsAndroid.RESULTS.GRANTED &&
-        granted['android.permission.BLUETOOTH_CONNECT'] === PermissionsAndroid.RESULTS.GRANTED
-      );
-    } catch (error) {
-      console.error('Error requesting permission:', error);
-      return false;
-    }
-  };
+  // const requestBluetoothPermission = async () => {
+  //   if (Platform.OS === 'ios') {
+  //     return true;
+  //   }
+  //   try {
+  //     const granted = await PermissionsAndroid.requestMultiple([
+  //       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+  //       PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+  //       PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT
+  //     ]);
+  //     return (
+  //       granted['android.permission.ACCESS_FINE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED &&
+  //       granted['android.permission.BLUETOOTH_SCAN'] === PermissionsAndroid.RESULTS.GRANTED &&
+  //       granted['android.permission.BLUETOOTH_CONNECT'] === PermissionsAndroid.RESULTS.GRANTED
+  //     );
+  //   } catch (error) {
+  //     console.error('Error requesting permission:', error);
+  //     return false;
+  //   }
+  // };
 
   const startScan = async () => {
     const isPermissionGranted = await requestBluetoothPermission();
@@ -102,68 +103,61 @@ const BleScreen = ({finalScore, connectedDevice, setConnectedDevice, sendStringD
 
       await device.connect();
       await device.discoverAllServicesAndCharacteristics();
-      setConnectedDevice(device);
+      setConnectedDevices(prevDevices => [...prevDevices, device]);
       stopScan();
-       // Stop scanning after successful connection
     } catch (error) {
       console.error('Error connecting to device:', error);
     }
   };
 
-  const disconnectDevice = async device => {
-    try {
-      await device.cancelConnection();
-      setConnectedDevice(null);
-    } catch (error) {
-      console.error('Error disconnecting from device:', error);
+  const selectConnectedDevice = device => {
+    if (!connectedDevice) {
+      setConnectedDevice(device);
+    } else {
+      disconnectDevice(connectedDevice);
+      setConnectedDevice(device);
+      setConnectedDevices(prevDevices => prevDevices.filter(d => d.id !== device.id));
     }
   };
 
-  const readRSSI = async () => {
+  const disconnectDevice = async device => {
     try {
-      const updatedDevice = await connectedDevice.readRSSI();
-      return updatedDevice.rssi;
+      if (device) {
+        // device.onDisconnected(null); // Clear event listener first
+        await device.cancelConnection();
+        setConnectedDevices(prevDevices => prevDevices.filter(d => d.id !== device.id));
+      }
     } catch (error) {
-      console.error('Error reading RSSI:', error);
-      return null;
+      console.error('Error disconnecting from device:', error);
+    } finally {
+      setConnectedDevice(null);
     }
   };
-  // const sendStringDataToDevice = async () => {
-  //   try {
-  //     if (!connectedDevice) {
-  //       console.error('No device connected.');
-  //       return;
-  //     }
   
-  //     const serviceUUID = '180A'; 
-  //     const characteristicUUID = '2A57'; 
-  
-  //     const dataString = Buffer.from(dataToSend, 'utf-8');
-  //     console.log('Data to send:', dataString);
-  
-  
-  //     await connectedDevice.writeCharacteristicWithResponseForService(
-  //       serviceUUID,
-  //       characteristicUUID,
-  //       dataString.toString('base64')
-  //     );
-  
-  //     console.log('String data sent:', dataString);
-  //   } catch (error) {
-  //     console.error('Error sending string data to device:', error);
-  //   }
-  // };
-  
-  
+
   const renderItem = ({ item }) => (
     <View style={styles.deviceContainer}>
       <Text style={styles.deviceName}>{item.name}</Text>
       <Button
-        title={connectedDevice && connectedDevice.id === item.id ? 'Connected' : 'Connect'}
-        onPress={() => connectToDevice(item)}
-        disabled={connectedDevice && connectedDevice.id === item.id}
-        color= "teal"
+        title={connectedDevices.some(dev => dev.id === item.id) ? 'Connected' : 'Connect'}
+        onPress={() => {
+          if (connectedDevices.some(dev => dev.id === item.id)) {
+            disconnectDevice(item);
+          } else {
+            connectToDevice(item);
+          }
+        }}
+        disabled={connectedDevices.some(dev => dev.id === item.id)}
+        color="teal"
       />
+      {connectedDevices.some(dev => dev.id === item.id) && (
+        <Button
+          title="Select"
+          onPress={() => selectConnectedDevice(item)}
+          disabled={!!connectedDevice}
+          color="#007bff" // Bootstrap primary color
+        />
+      )}
     </View>
   );
 
@@ -184,14 +178,14 @@ const BleScreen = ({finalScore, connectedDevice, setConnectedDevice, sendStringD
       {connectedDevice && (
         <View style={styles.connectedDeviceContainer}>
           <Text style={styles.deviceName}>{connectedDevice.name}</Text>
-          <Button title="Disconnect" onPress={() => disconnectDevice(connectedDevice)} color= "red"/>
+          <Button title="Disconnect" onPress={() => disconnectDevice(connectedDevice)} color="red"/>
           <TextInput
             style={styles.input}
             placeholder="Enter data to send"
             onChangeText={setInputValue} // Update inputValue when text changes
             value={inputValue}
           />
-          <Button title="Send Data" onPress={handleSendButtonPress} color= "teal"/>
+          <Button title="Send Data" onPress={handleSendButtonPress} color="teal"/>
         </View>
       )}
       {connectedDevice ? (
@@ -212,9 +206,6 @@ const styles = StyleSheet.create({
   scanSection: {
     flex: 1,
   },
-  scanButton: {
-    color: "teal"
-  },
   connectedDeviceContainer: {
     marginTop: 20,
   },
@@ -227,7 +218,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   deviceName: {
-    fontSize: 16,
+    fontSize: 16
   },
   input: {
     height: 40,
@@ -235,6 +226,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  selectButton: {
+    backgroundColor: '#007bff',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  noDeviceText: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 16,
   },
 });
 

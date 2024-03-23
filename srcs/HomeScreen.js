@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons'; // Assuming you're using Expo, if not, use appropriate icon library
 import AnalysisOptions from './OptionInput';
 import BleComponent from './BleComponent';
-import BleAutoDataExchange from './BleBroadcaster';
+import BLEAdvertiserComponent from './BleBroadcaster';
 
 function HomeScreen({ navigation,  setFinalScore, dataToSend, setDataToSend, sendStringDataToDevice, connectedDevice}) {
     const [selectedOptions, setSelectedOptions] = useState([]);
@@ -32,7 +32,7 @@ function HomeScreen({ navigation,  setFinalScore, dataToSend, setDataToSend, sen
   );
 }
 
-function DevicesScreen({ navigation, finalScore, setConnectedDevice, connectedDevice, sendStringDataToDevice, setDataToSend, dataToSend}) {
+function DevicesScreen({ navigation, finalScore, setConnectedDevice, connectedDevice, sendStringDataToDevice, setDataToSend, dataToSend, requestBluetoothPermission}) {
   return (
     <BleComponent 
     finalScore={finalScore} 
@@ -41,6 +41,7 @@ function DevicesScreen({ navigation, finalScore, setConnectedDevice, connectedDe
     sendStringDataToDevice={sendStringDataToDevice}
     setDataToSend={setDataToSend} 
     dataToSend={dataToSend}
+    requestBluetoothPermission={requestBluetoothPermission}
     />
     // <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
     //   <Button title="Go to Notifications" onPress={() => navigation.navigate('Notifications')} />
@@ -48,10 +49,10 @@ function DevicesScreen({ navigation, finalScore, setConnectedDevice, connectedDe
   );
 }
 
-function NotificationsScreen({ navigation, dataToSend }) {
+function NotificationsScreen({ navigation, dataToSend, requestBluetoothPermission }) {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      {/* <BleAutoDataExchange dataToSend={dataToSend}/> */}
+      {/* <BLEAdvertiserComponent requestBluetoothPermission={requestBluetoothPermission}/> */}
     </View>
   );
 }
@@ -66,7 +67,7 @@ function SettingsScreen({ navigation }) {
 
 const Tab = createBottomTabNavigator();
 
-export default function HomeScreenPage( {setFinalScore, finalScore, setConnectedDevice, connectedDevice, sendStringDataToDevice, setDataToSend, dataToSend} ) {
+export default function HomeScreenPage( {setFinalScore, finalScore, setConnectedDevice, connectedDevice, sendStringDataToDevice, setDataToSend, dataToSend , requestBluetoothPermission} ) {
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -101,10 +102,10 @@ export default function HomeScreenPage( {setFinalScore, finalScore, setConnected
           {(props) => <HomeScreen {...props} setFinalScore={setFinalScore} setDataToSend={setDataToSend} dataToSend={dataToSend} sendStringDataToDevice={sendStringDataToDevice} connectedDevice={connectedDevice}/>}
         </Tab.Screen>
         <Tab.Screen name="Devices">
-          {(props) => <DevicesScreen {...props} finalScore={finalScore} setConnectedDevice={setConnectedDevice} connectedDevice={connectedDevice} sendStringDataToDevice={sendStringDataToDevice} setDataToSend={setDataToSend} dataToSend={dataToSend}/>}
+          {(props) => <DevicesScreen {...props} finalScore={finalScore} setConnectedDevice={setConnectedDevice} connectedDevice={connectedDevice} sendStringDataToDevice={sendStringDataToDevice} setDataToSend={setDataToSend} dataToSend={dataToSend} requestBluetoothPermission={requestBluetoothPermission}/>}
         </Tab.Screen>
         <Tab.Screen name="Notifications">
-        {(props) => <NotificationsScreen {...props} dataToSend={dataToSend}/>}
+        {(props) => <NotificationsScreen {...props} dataToSend={dataToSend} requestBluetoothPermission={requestBluetoothPermission}/>}
         </Tab.Screen>
         <Tab.Screen name="Settings" component={SettingsScreen} />
       </Tab.Navigator>

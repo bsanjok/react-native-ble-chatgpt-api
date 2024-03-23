@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, PermissionsAndroid, Platform } from 'react-native';
 import WelcomeScreen from './srcs/Welcome';
 import HomeScreenPage from './srcs/HomeScreen';
 import { BleManager } from 'react-native-ble-plx';
@@ -10,6 +10,29 @@ const App = () => {
   const [finalScore, setFinalScore] = useState('');
   const [connectedDevice, setConnectedDevice] = useState(null);
   const [dataToSend, setDataToSend] = useState('wrong');
+
+  const requestBluetoothPermission = async () => {
+    if (Platform.OS === 'ios') {
+      return true;
+    }
+    try {
+      const granted = await PermissionsAndroid.requestMultiple([
+        // PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+        PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+        PermissionsAndroid.PERMISSIONS.BLUETOOTH_ADVERTISE
+      ]);
+      return (
+        // granted['android.permission.ACCESS_FINE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED &&
+        granted['android.permission.BLUETOOTH_SCAN'] === PermissionsAndroid.RESULTS.GRANTED &&
+        granted['android.permission.BLUETOOTH_CONNECT'] === PermissionsAndroid.RESULTS.GRANTED
+        // granted['android.permission.BLUETOOTH_ADVERTISE'] === PermissionsAndroid.RESULTS.GRANTED
+      );
+    } catch (error) {
+      console.error('Error requesting permission:', error);
+      return false;
+    }
+  };
 
   const sendStringDataToDevice = async () => {
     try {
@@ -51,6 +74,7 @@ const App = () => {
           sendStringDataToDevice={sendStringDataToDevice}
           dataToSend={dataToSend}
           setDataToSend={setDataToSend}
+          requestBluetoothPermission={requestBluetoothPermission}
 
           />
       )}
