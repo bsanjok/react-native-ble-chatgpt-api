@@ -10,7 +10,7 @@ import BLEAdvertiserComponent from './BleBroadcaster';
 function HomeScreen({ navigation,  setFinalScore, dataToSend, setDataToSend, sendStringDataToDevice, connectedDevice}) {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [availableOptions, setAvailableOptions] = useState(["Anime", "Football", "Video Games", "Startup", "Beer", "Travel", "Hiking", "Project Management", "Food", "Making Friends", "Cycling"]);
-    const [toCompareOptions, setToCompareOptions] = useState(["Startup", "Beer", "Travel", "Hiking"])
+    const [toCompareOptions, setToCompareOptions] = useState(["Interested Age: 25 to 40", "Startup", "Beer", "Travel", "Hiking"])
     const [sortingAlphabets, setSortingAlphabets] = useState([]);
     const [filterText, setFilterText] = useState('');
   return (

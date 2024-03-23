@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, StyleSheet, PermissionsAndroid, Platform } from 'react-native';
 import WelcomeScreen from './srcs/Welcome';
 import HomeScreenPage from './srcs/HomeScreen';
-import { BleManager } from 'react-native-ble-plx';
 import { Buffer } from 'buffer';
 
 const App = () => {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
-const PersonalityAnalysis = ({ selectedOptions, toCompareOptions, setFinalScore, dataToSend, setDataToSend, sendStringDataToDevice, connectedDevice}) => {
+const PersonalityAnalysis = ({ ageInterest, selectedOptions, toCompareOptions, setFinalScore, dataToSend, setDataToSend, sendStringDataToDevice, connectedDevice}) => {
   const [analysisResult, setAnalysisResult] = useState('');
   const [minimized, setMinimized] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -27,9 +27,6 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions, setFinalScore,
       });
     }
   }, [dataToSend]);
-  
-  
-  
 
   useEffect(() => {
     if (resultingScore !== null) {
@@ -65,11 +62,11 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions, setFinalScore,
         messages: [
           {
             role: "system",
-            content: "You are provided with two user with set of keywords of interests separated by comma. Two users are separated by |. With content you are provided, compute similarity score based on Cosine Similarity algorithm. Show score as out of 100 based on their interests. Show only score and summary of comparision with short insight. Add a suggestion for bonding at end."
+            content: "You are provided with two user with set of keywords of interests separated by comma. The interested age of users are provided as 'Interested Age:'. Two users are separated by |. With content you are provided, compute similarity score based on Cosine Similarity algorithm. Show score as out of 100 based on their interests. Show only score and summary of comparision. Add a suggestion for bonding at end."
           },
           {
             role: "user",
-            content: `First user: ${formattedSelectedoptions} | Second user: ${formattedCompareOptions}`
+            content: `First user: ${formattedSelectedoptions} ${ageInterest} | Second user: ${formattedCompareOptions}`
           }
         ],
         temperature: 0,
@@ -97,6 +94,7 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions, setFinalScore,
       
       const result = data.choices[0].message.content;
       // Extract score from the result
+      console.log(ageInterest);
 
       setResultingScore(extractResultingScore(result))
       console.log(`the score is: ${resultingScore}`);
@@ -167,7 +165,7 @@ const PersonalityAnalysis = ({ selectedOptions, toCompareOptions, setFinalScore,
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 10,
   },
   analyzeButton: {
     backgroundColor: 'teal',
@@ -186,7 +184,7 @@ const styles = StyleSheet.create({
   resultText: {
     fontWeight: 'bold',
     fontSize: 16,
-    marginBottom: 10,
+    marginBottom: 0,
     textAlign: 'center',
   },
   resultContent: {

@@ -6,20 +6,55 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setStatusBar } from './StatusBar';
 import GenderBox from './GenderForm';
 import AboutMeComponent from './AboutMe';
+import AgeRangeSelector from './AgeRange';
 
 const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptions, setFinalScore, setDataToSend, dataToSend, sendStringDataToDevice, connectedDevice, selectedOptions, setSelectedOptions }) => {
   const [showAddOption, setShowAddOption] = useState(false);
   const [filterText, setFilterText] = useState('');
   const [newOptionInput, setNewOptionInput] = useState('');
+  const [ageInterest, setAgeInterest] = useState(null);
+  const [isTyping, setIsTyping] = useState(false);
+  
 
   useEffect(() => {
     setStatusBar();
     retrieveSelectedOptions();
   }, []);
 
+  const handleFilterTextChange = (text) => {
+    setFilterText(text);
+    setIsTyping(text.trim().length > 0); // Update state based on whether filter text is not empty
+  };
+  // useEffect(() => {
+  //   if (ageInterest) {
+  //     setAvailableOptions(prevOptions => {
+  //       if (!prevOptions.includes(ageInterest)) {
+  //         return [...prevOptions, ageInterest];
+  //       }
+  //       return prevOptions;
+  //     });
+  //   }
+  // }, [ageInterest]);
+
+  // useEffect(() => {
+  //   if (ageInterest) {
+  //     setAvailableOptions(prevOptions => {
+  //       if (!prevOptions.includes(ageInterest)) {
+  //         return [...prevOptions, ageInterest];
+  //       }
+  //       return prevOptions;
+  //     });
+  //   }
+  // }, [ageInterest]);
+
   useEffect(() => {
     saveSelectedOptions();
   }, [selectedOptions]);
+
+  const handleAgeInterestChange = (minAge, maxAge) => {
+    const ageInterestString = `Interested Age: ${minAge} to ${maxAge}`;
+    setAgeInterest(ageInterestString);
+  };
 
   const saveSelectedOptions = async () => {
     try {
@@ -69,6 +104,7 @@ const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptio
       setFilterText('');
       setSelectedOptions([...selectedOptions, newOption]);
       setNewOptionInput('');
+      setIsTyping(false);
     } else {
       Alert.alert('Option already exists.');
     }
@@ -86,73 +122,72 @@ const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptio
 
   return (
     <View style={styles.container}>
-      <View style={styles.filterContainer}>
-        <GenderBox setSelectedOptions={setSelectedOptions} selectedOptions={selectedOptions}/>
-      </View>
-      <View style={styles.filterContainerA}>
-        <AboutMeComponent selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} availableOptions={availableOptions} setAvailableOptions={setAvailableOptions}/>
-      </View>
+      {!isTyping && (
+        <>
+          <View style={styles.filterContainer}>
+            <GenderBox setSelectedOptions={setSelectedOptions} selectedOptions={selectedOptions}/>
+          </View>
+          <View style={styles.filterContainer}><AgeRangeSelector onAgeInterestChange={handleAgeInterestChange} />
+          </View>
+          <View style={styles.filterContainerA}>
+            <AboutMeComponent selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} availableOptions={availableOptions} setAvailableOptions={setAvailableOptions}/>
+          </View>
+ 
+        </>
+      )}
       <View style={styles.filterContainer}>
         <TextInput
           style={styles.filterInput}
           placeholder="Filter Interests"
-          onChangeText={text => setFilterText(text)}
+          onChangeText={handleFilterTextChange}
           value={filterText}
         />
         <TouchableOpacity style={styles.resetButton} onPress={resetSelectedOptions}>
           <Text style={styles.resetButtonText}>Reset</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.optionsContainer}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {filterOptionsByText().map((option, index) => (
-            <View key={index} style={styles.optionContainer}>
-              <TouchableOpacity
-                style={[styles.option, selectedOptions.includes(option) ? styles.selectedOption : null]}
-                onPress={() => toggleOption(option)}
-              >
-                <Text style={styles.optionText}>{option}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => removeOption(option)}>
-                <Ionicons name="close-circle" size={24} color="red" />
-              </TouchableOpacity>
-            </View>
-          ))}
-          {showAddOption && (
-            <View style={styles.addOptionContainer}>
-              {/* <TextInput
-                style={styles.addOptionInput}
-                placeholder="Enter new option"
-                onChangeText={text => setNewOptionInput(text)}
-                value={newOptionInput}
-              /> */}
-              <TouchableOpacity
-                style={[styles.option, styles.addOptionButton]}
-                onPress={addNewOption}
-              >
-                <Text style={styles.optionText}>Add Option</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </ScrollView>
-      </View>
-      <View style={styles.resultContainer}>
-        {filterText.trim() === '' && (
-          <PersonalityAnalysis
-            selectedOptions={selectedOptions}
-            toCompareOptions={toCompareOptions}
-            setFinalScore={setFinalScore}
-            dataToSend={dataToSend}
-            setDataToSend={setDataToSend}
-            sendStringDataToDevice={sendStringDataToDevice}
-            connectedDevice={connectedDevice}
-          />
-        )}
-      </View>
+        <View style={styles.optionsContainer}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {filterOptionsByText().map((option, index) => (
+              <View key={index} style={styles.optionContainer}>
+                <TouchableOpacity
+                  style={[styles.option, selectedOptions.includes(option) ? styles.selectedOption : null]}
+                  onPress={() => toggleOption(option)}
+                >
+                  <Text style={styles.optionText}>{option}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => removeOption(option)}>
+                  <Ionicons name="close-circle" size={24} color="red" />
+                </TouchableOpacity>
+              </View>
+            ))}
+            {showAddOption && (
+              <View style={styles.addOptionContainer}>
+                <TouchableOpacity
+                  style={[styles.option, styles.addOptionButton]}
+                  onPress={addNewOption}
+                >
+                  <Text style={styles.optionText}>Add Option</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </ScrollView>
+        </View>
+      {!isTyping && (<View style={styles.resultContainer}>
+      <PersonalityAnalysis
+        selectedOptions={selectedOptions}
+        toCompareOptions={toCompareOptions}
+        setFinalScore={setFinalScore}
+        dataToSend={dataToSend}
+        setDataToSend={setDataToSend}
+        sendStringDataToDevice={sendStringDataToDevice}
+        connectedDevice={connectedDevice}
+        ageInterest={ageInterest}
+      />
+    </View>)}
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
