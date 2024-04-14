@@ -127,8 +127,8 @@ const AnalysisOptions = ({ availableOptions, toCompareOptions, setAvailableOptio
           <View style={styles.filterContainer}>
             <GenderBox setSelectedOptions={setSelectedOptions} selectedOptions={selectedOptions}/>
           </View>
-          <View style={styles.filterContainer}><AgeRangeSelector onAgeInterestChange={handleAgeInterestChange} />
-          </View>
+          {/* <View style={styles.filterContainer}><AgeRangeSelector onAgeInterestChange={handleAgeInterestChange} />
+          </View> */}
           <View style={styles.filterContainerA}>
             <AboutMeComponent selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} availableOptions={availableOptions} setAvailableOptions={setAvailableOptions}/>
           </View>

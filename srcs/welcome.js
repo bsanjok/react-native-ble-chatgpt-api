@@ -7,7 +7,7 @@ const WelcomeScreen = ({ onPress }) => {
     <ImageBackground source={require('../assets/background.jpg')} style={styles.backgroundImage}>
       <LinearGradient colors={['transparent', 'black']} style={styles.container}>
         <View style={styles.content}>
-          <Text style={styles.welcomeText}>Welcome to Personai</Text>
+          <Text style={styles.welcomeText}>Welcome to Aicebreak</Text>
           <TouchableOpacity onPress={onPress} style={styles.button}>
             <Text style={styles.buttonText}>Proceed</Text>
           </TouchableOpacity>

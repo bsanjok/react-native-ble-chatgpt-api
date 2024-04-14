@@ -46,7 +46,7 @@ const PersonalityAnalysis = ({ ageInterest, selectedOptions, toCompareOptions, s
 
   const extractResultingScore = (result) => {
     const scoreIndex = result.lastIndexOf('Score:');
-    const scoreString = result.substring(scoreIndex + 7); // Assuming 'Score:' is followed by the score
+    const scoreString = result.substring(scoreIndex + 7);
     const score = parseFloat(scoreString);
 
     return score;
