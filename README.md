@@ -5,7 +5,7 @@
     <h1 align="center">REACT-NATIVE-BLE-&-CHATGPT-API</h1>
 </p>
 <p align="center">
-    <em><code>► BLE and ChatGPT API React Native Project</code></em>
+    <em><code>► Bluetooth BLE and ChatGPT API React Native Project</code></em>
 </p>
 <p align="center">
 	<img src="https://img.shields.io/github/last-commit/bsanjok/react-native-chatgpt-api?style=flat&logo=git&logoColor=white&color=0080ff" alt="last-commit">
